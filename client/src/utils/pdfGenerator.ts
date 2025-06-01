@@ -74,28 +74,30 @@ function generateHTMLContent(
     
     return `
       <div class="field" style="margin-bottom: 20px;">
-        <label style="font-weight: bold; display: block; margin-bottom: 5px;">${label}:</label>
-        <div style="border-bottom: 1px solid #ccc; padding-bottom: 5px; min-height: 20px;">${value}</div>
+        <label style="font-weight: bold; display: block; margin-bottom: 5px; color: #000000; font-size: 14px;">${label}:</label>
+        <div style="border-bottom: 1px solid #000000; padding-bottom: 5px; min-height: 20px; color: #000000; font-size: 12px;">${value}</div>
       </div>
     `;
   }).join('');
 
   return `
     <div style="
-      font-family: Arial, sans-serif;
+      font-family: 'Arial', sans-serif;
       direction: ${isRTL ? 'rtl' : 'ltr'};
       text-align: ${isRTL ? 'right' : 'left'};
       padding: 40px;
       max-width: 800px;
       margin: 0 auto;
       line-height: 1.6;
+      background-color: #ffffff;
+      color: #000000;
     ">
       <div style="text-align: center; margin-bottom: 40px;">
-        <h1 style="color: #2563eb; margin-bottom: 10px; font-size: 28px;">${title}</h1>
-        <p style="color: #666; font-size: 14px;">
+        <h1 style="color: #000000; margin-bottom: 10px; font-size: 24px; font-weight: bold;">${title}</h1>
+        <p style="color: #000000; font-size: 12px; margin-bottom: 10px;">
           ${language === 'ar' ? 'الجمهورية الجزائرية الديمقراطية الشعبية' : 'République Algérienne Démocratique et Populaire'}
         </p>
-        <hr style="border: none; border-top: 2px solid #2563eb; width: 200px; margin: 20px auto;">
+        <hr style="border: none; border-top: 2px solid #000000; width: 200px; margin: 20px auto;">
       </div>
       
       <div style="margin-bottom: 40px;">
@@ -103,10 +105,10 @@ function generateHTMLContent(
       </div>
       
       <div style="margin-top: 60px; text-align: center;">
-        <p style="color: #666; font-size: 12px;">
+        <p style="color: #000000; font-size: 10px; margin-bottom: 5px;">
           ${language === 'ar' ? 'تم إنشاء هذه الوثيقة إلكترونياً' : 'Document généré électroniquement'}
         </p>
-        <p style="color: #666; font-size: 12px;">
+        <p style="color: #000000; font-size: 10px;">
           ${language === 'ar' ? 'التاريخ: ' : 'Date: '}${new Date().toLocaleDateString(
             language === 'ar' ? 'ar-DZ' : 'fr-FR'
           )}
