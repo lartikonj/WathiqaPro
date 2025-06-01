@@ -57,22 +57,24 @@ export function Header() {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8 rtl:space-x-reverse">
             <a
-              href="#"
+              href="/"
               className="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary-foreground transition-colors"
             >
-              {t('nav.dashboard')}
+              Accueil
             </a>
+            {(user || isGuest) && (
+              <a
+                href="/dashboard"
+                className="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary-foreground transition-colors"
+              >
+                {t('nav.dashboard')}
+              </a>
+            )}
             <a
-              href="#"
+              href="/forms"
               className="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary-foreground transition-colors"
             >
               {t('nav.forms')}
-            </a>
-            <a
-              href="#"
-              className="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary-foreground transition-colors"
-            >
-              {t('nav.documents')}
             </a>
           </nav>
 
@@ -111,8 +113,17 @@ export function Header() {
               )}
             </Button>
 
-            {/* User Menu */}
-            {(user || isGuest) && (
+            {/* Authentication */}
+            {!user && !isGuest ? (
+              <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                <Button variant="ghost" size="sm" asChild>
+                  <a href="/login">{t('auth.login')}</a>
+                </Button>
+                <Button size="sm" asChild>
+                  <a href="/register">{t('auth.register')}</a>
+                </Button>
+              </div>
+            ) : (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="gap-2 px-2">

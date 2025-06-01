@@ -20,9 +20,9 @@ export function Sidebar({ className }: SidebarProps) {
   const navigation = [
     {
       name: t('sidebar.dashboard'),
-      href: '/',
+      href: '/dashboard',
       icon: Home,
-      current: currentPath === '/',
+      current: currentPath === '/dashboard',
     },
     {
       name: t('sidebar.forms'),

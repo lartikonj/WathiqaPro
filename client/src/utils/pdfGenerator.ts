@@ -1,5 +1,7 @@
 import html2pdf from 'html2pdf.js';
 import { FormSchema, FormData } from '@/types/forms';
+import { documentsService } from '@/lib/firestore';
+import { auth } from '@/lib/firebase';
 
 export interface PDFOptions {
   margin: number;
@@ -23,19 +25,35 @@ export function generatePDF(
   language: string = 'fr',
   options: Partial<PDFOptions> = {}
 ): Promise<void> {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     try {
       const finalOptions = { ...defaultOptions, ...options };
       finalOptions.filename = `${formSchema.id}-${Date.now()}.pdf`;
 
       const htmlContent = generateHTMLContent(formSchema, formData, language);
       
-      html2pdf()
+      // Generate and save PDF
+      await html2pdf()
         .from(htmlContent)
         .set(finalOptions)
-        .save()
-        .then(() => resolve())
-        .catch((error: Error) => reject(error));
+        .save();
+
+      // Record generation in Firestore if user is authenticated
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        try {
+          await documentsService.recordGeneration(currentUser.uid, {
+            formId: formSchema.id,
+            formType: formSchema.category,
+            title: language === 'ar' ? formSchema.nameAr : formSchema.name
+          });
+        } catch (firestoreError) {
+          console.error('Error recording document generation:', firestoreError);
+          // Don't fail the PDF generation if Firestore fails
+        }
+      }
+
+      resolve();
     } catch (error) {
       reject(error);
     }
