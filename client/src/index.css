@@ -3,48 +3,48 @@
 @tailwind utilities;
 
 :root {
-  --background: 255 255 255; /* #FFFFFF */
-  --foreground: 51 65 85; /* #334155 */
-  --muted: 248 250 252; /* #F8FAFC */
-  --muted-foreground: 100 116 139; /* #64748B */
+  --background: 255 255 255; /* #FFFFFF - Pure white */
+  --foreground: 17 24 39; /* #111827 - Almost black for readability */
+  --muted: 249 250 251; /* #F9FAFB - Very light gray */
+  --muted-foreground: 107 114 128; /* #6B7280 - Medium gray */
   --popover: 255 255 255; /* #FFFFFF */
-  --popover-foreground: 51 65 85; /* #334155 */
+  --popover-foreground: 17 24 39; /* #111827 */
   --card: 255 255 255; /* #FFFFFF */
-  --card-foreground: 51 65 85; /* #334155 */
-  --border: 226 232 240; /* #E2E8F0 */
-  --input: 248 250 252; /* #F8FAFC */
-  --primary: 59 130 246; /* #3B82F6 - Friendly blue */
+  --card-foreground: 17 24 39; /* #111827 */
+  --border: 229 231 235; /* #E5E7EB - Light gray border */
+  --input: 249 250 251; /* #F9FAFB */
+  --primary: 37 99 235; /* #2563EB - Simple blue */
   --primary-foreground: 255 255 255; /* #FFFFFF */
-  --secondary: 248 250 252; /* #F8FAFC */
-  --secondary-foreground: 71 85 105; /* #475569 */
-  --accent: 240 253 244; /* #F0FDF4 - Soft green accent */
-  --accent-foreground: 22 101 52; /* #166534 */
-  --destructive: 248 113 113; /* #F87171 - Softer red */
+  --secondary: 243 244 246; /* #F3F4F6 - Light gray */
+  --secondary-foreground: 55 65 81; /* #374151 */
+  --accent: 243 244 246; /* #F3F4F6 - Same as secondary for simplicity */
+  --accent-foreground: 55 65 81; /* #374151 */
+  --destructive: 220 38 38; /* #DC2626 - Standard red */
   --destructive-foreground: 255 255 255; /* #FFFFFF */
-  --ring: 59 130 246; /* #3B82F6 */
-  --radius: 0.75rem;
+  --ring: 37 99 235; /* #2563EB */
+  --radius: 0.5rem;
 }
 
 .dark {
-  --background: 15 23 42; /* #0F172A */
-  --foreground: 241 245 249; /* #F1F5F9 */
-  --muted: 30 41 59; /* #1E293B */
-  --muted-foreground: 148 163 184; /* #94A3B8 */
-  --popover: 30 41 59; /* #1E293B */
-  --popover-foreground: 241 245 249; /* #F1F5F9 */
-  --card: 30 41 59; /* #1E293B */
-  --card-foreground: 241 245 249; /* #F1F5F9 */
-  --border: 51 65 85; /* #334155 */
-  --input: 51 65 85; /* #334155 */
-  --primary: 96 165 250; /* #60A5FA - Lighter blue for dark mode */
-  --primary-foreground: 15 23 42; /* #0F172A */
-  --secondary: 51 65 85; /* #334155 */
-  --secondary-foreground: 226 232 240; /* #E2E8F0 */
-  --accent: 34 197 94; /* #22C55E - Green accent for dark mode */
-  --accent-foreground: 15 23 42; /* #0F172A */
-  --destructive: 248 113 113; /* #F87171 - Consistent softer red */
+  --background: 17 24 39; /* #111827 - Dark gray */
+  --foreground: 249 250 251; /* #F9FAFB - Light gray */
+  --muted: 31 41 55; /* #1F2937 - Darker gray */
+  --muted-foreground: 156 163 175; /* #9CA3AF - Medium gray */
+  --popover: 31 41 55; /* #1F2937 */
+  --popover-foreground: 249 250 251; /* #F9FAFB */
+  --card: 31 41 55; /* #1F2937 */
+  --card-foreground: 249 250 251; /* #F9FAFB */
+  --border: 55 65 81; /* #374151 - Medium dark gray */
+  --input: 55 65 81; /* #374151 */
+  --primary: 59 130 246; /* #3B82F6 - Bright blue for contrast */
+  --primary-foreground: 17 24 39; /* #111827 */
+  --secondary: 55 65 81; /* #374151 */
+  --secondary-foreground: 209 213 219; /* #D1D5DB */
+  --accent: 55 65 81; /* #374151 - Same as secondary */
+  --accent-foreground: 209 213 219; /* #D1D5DB */
+  --destructive: 239 68 68; /* #EF4444 - Bright red for visibility */
   --destructive-foreground: 255 255 255; /* #FFFFFF */
-  --ring: 96 165 250; /* #60A5FA */
+  --ring: 59 130 246; /* #3B82F6 */
 }
 
 @layer base {
@@ -87,96 +87,31 @@
     @apply bg-muted-foreground/30;
   }
 
-  /* Enhanced Animation improvements */
+  /* Simple fade animation */
   .animate-fade-in {
-    animation: fadeIn 0.3s ease-in-out;
-  }
-
-  .animate-slide-up {
-    animation: slideUp 0.4s ease-out;
-  }
-
-  .animate-scale-in {
-    animation: scaleIn 0.2s ease-out;
-  }
-
-  .animate-bounce-gentle {
-    animation: bounceGentle 0.6s ease-out;
+    animation: fadeIn 0.2s ease-in-out;
   }
 
   @keyframes fadeIn {
     from {
       opacity: 0;
-      transform: translateY(10px);
     }
     to {
       opacity: 1;
-      transform: translateY(0);
     }
   }
 
-  @keyframes slideUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes scaleIn {
-    from {
-      opacity: 0;
-      transform: scale(0.95);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-
-  @keyframes bounceGentle {
-    0%, 20%, 50%, 80%, 100% {
-      transform: translateY(0);
-    }
-    40% {
-      transform: translateY(-4px);
-    }
-    60% {
-      transform: translateY(-2px);
-    }
-  }
-
-  /* Enhanced hover effects */
+  /* Simple hover effect */
   .hover-lift {
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    transition: transform 0.15s ease-in-out;
   }
 
   .hover-lift:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
   }
 
-  .dark .hover-lift:hover {
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-  }
-
-  /* Smooth focus indicators */
+  /* Clean focus indicators */
   .focus-ring {
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
-  }
-
-  /* Glass effect for cards */
-  .glass-effect {
-    backdrop-filter: blur(10px);
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-  }
-
-  .dark .glass-effect {
-    background: rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1;
   }
 }
