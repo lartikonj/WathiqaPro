@@ -31,6 +31,7 @@ export default function Forms() {
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [isLoading, setIsLoading] = useState(false);
   const isRTL = i18n.language === 'ar';
 
   const getFormIcon = (iconString: string) => {
