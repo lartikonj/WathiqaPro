@@ -1,11 +1,12 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User as FirebaseUser, onAuthStateChanged, signOut } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
-import { User } from '@shared/schema';
+import { doc, setDoc } from 'firebase/firestore';
+import { auth, db } from '@/lib/firebase';
+import { userService, UserProfile } from '@/lib/firestore';
 
 interface AuthContextType {
   user: FirebaseUser | null;
-  userData: User | null;
+  userData: UserProfile | null;
   loading: boolean;
   logout: () => Promise<void>;
   isGuest: boolean;
@@ -28,7 +29,7 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<FirebaseUser | null>(null);
-  const [userData, setUserData] = useState<User | null>(null);
+  const [userData, setUserData] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [isGuest, setIsGuest] = useState(false);
 
@@ -37,39 +38,36 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setUser(firebaseUser);
       
       if (firebaseUser) {
-        // Fetch user data from your backend
         try {
-          const response = await fetch(`/api/users/profile/${firebaseUser.uid}`, {
-            credentials: 'include',
-          });
+          // Try to get existing user profile from Firestore
+          let userProfile = await userService.getUserProfile(firebaseUser.uid);
           
-          if (response.ok) {
-            const userProfile = await response.json();
-            setUserData(userProfile);
-          } else if (response.status === 404) {
-            // User doesn't exist in our database, create them
-            const newUserResponse = await fetch('/api/users', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              credentials: 'include',
-              body: JSON.stringify({
-                email: firebaseUser.email,
-                username: firebaseUser.email?.split('@')[0] || 'user',
-                firebaseUid: firebaseUser.uid,
-                displayName: firebaseUser.displayName,
-                photoURL: firebaseUser.photoURL,
-              }),
+          if (!userProfile) {
+            // Create new user profile in Firestore
+            const newUserData = {
+              id: firebaseUser.uid,
+              email: firebaseUser.email || '',
+              displayName: firebaseUser.displayName,
+              photoURL: firebaseUser.photoURL,
+              preferences: {
+                language: 'fr',
+                theme: 'light'
+              }
+            };
+            
+            // Create the document with the user's UID as the document ID
+            await setDoc(doc(db, 'users', firebaseUser.uid), {
+              ...newUserData,
+              createdAt: new Date(),
+              updatedAt: new Date()
             });
             
-            if (newUserResponse.ok) {
-              const newUser = await newUserResponse.json();
-              setUserData(newUser);
-            }
+            userProfile = newUserData as UserProfile;
           }
+          
+          setUserData(userProfile);
         } catch (error) {
-          console.error('Error fetching user data:', error);
+          console.error('Error managing user data:', error);
         }
         setIsGuest(false);
       } else {

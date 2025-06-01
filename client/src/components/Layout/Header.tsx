@@ -50,7 +50,7 @@ export function Header() {
               <FileText className="h-5 w-5 text-primary-foreground" />
             </div>
             <span className="text-xl font-semibold text-slate-900 dark:text-white">
-              DocuGen
+              WathiqaPro
             </span>
           </div>
 
