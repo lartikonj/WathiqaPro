@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useMemo } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import ReactMarkdown from 'react-markdown';
@@ -25,7 +24,7 @@ interface MarkdownTemplateEditorProps {
 export function MarkdownTemplateEditor({ template, categories, onSave, onCancel }: MarkdownTemplateEditorProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  
+
   const [markdownContent, setMarkdownContent] = useState(template?.markdownContent || '');
   const [formData, setFormData] = useState<Partial<InsertTemplate>>({
     name: template?.name || '',
@@ -43,7 +42,7 @@ export function MarkdownTemplateEditor({ template, categories, onSave, onCancel 
     const fieldRegex = /\/([a-zA-Z_][a-zA-Z0-9_]*)\b/g;
     const matches = [...markdownContent.matchAll(fieldRegex)];
     const uniqueFields = [...new Set(matches.map(match => match[1]))];
-    
+
     return uniqueFields.map(fieldName => ({
       id: fieldName,
       type: 'text' as const,
@@ -58,7 +57,7 @@ export function MarkdownTemplateEditor({ template, categories, onSave, onCancel 
   // Parse markdown and replace field placeholders with inputs
   const parsedContent = useMemo(() => {
     let content = markdownContent;
-    
+
     // Replace field placeholders with styled input boxes
     extractedFields.forEach(field => {
       const regex = new RegExp(`\\/${field.id}\\b`, 'g');
@@ -67,7 +66,7 @@ export function MarkdownTemplateEditor({ template, categories, onSave, onCancel 
         <div class="field-input">____________________</div>
       </div>`);
     });
-    
+
     return content;
   }, [markdownContent, extractedFields]);
 
@@ -76,14 +75,14 @@ export function MarkdownTemplateEditor({ template, categories, onSave, onCancel 
       const templateData = { ...data };
       delete (templateData as any).markdownContent;
       const templateId = await templateService.createTemplate(templateData);
-      
+
       // Store markdown content separately or as part of template
       // For now, we'll add it to the template data
       await templateService.updateTemplate(templateId, { 
         markdownContent,
         fields: extractedFields 
       } as any);
-      
+
       return templateId;
     },
     onSuccess: () => {
@@ -106,10 +105,10 @@ export function MarkdownTemplateEditor({ template, categories, onSave, onCancel 
   const updateMutation = useMutation({
     mutationFn: async (data: Partial<InsertTemplate> & { markdownContent: string }) => {
       if (!template?.id) throw new Error('Template ID required');
-      
+
       const templateData = { ...data };
       delete (templateData as any).markdownContent;
-      
+
       await templateService.updateTemplate(template.id, {
         ...templateData,
         markdownContent,
@@ -135,7 +134,7 @@ export function MarkdownTemplateEditor({ template, categories, onSave, onCancel 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const templateData = {
       ...formData,
       fields: extractedFields,
@@ -205,7 +204,7 @@ export function MarkdownTemplateEditor({ template, categories, onSave, onCancel 
             Créez des formulaires avec Markdown et des champs dynamiques
           </p>
         </div>
-        
+
         <div className="flex space-x-2">
           <Button
             variant="outline"
@@ -235,7 +234,7 @@ export function MarkdownTemplateEditor({ template, categories, onSave, onCancel 
                   required
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="nameAr">Nom (Arabe)</Label>
                 <Input
@@ -247,7 +246,7 @@ export function MarkdownTemplateEditor({ template, categories, onSave, onCancel 
                 />
               </div>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="description">Description (Français)</Label>
@@ -258,7 +257,7 @@ export function MarkdownTemplateEditor({ template, categories, onSave, onCancel 
                   required
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="descriptionAr">Description (Arabe)</Label>
                 <Textarea
@@ -270,7 +269,7 @@ export function MarkdownTemplateEditor({ template, categories, onSave, onCancel 
                 />
               </div>
             </div>
-            
+
             <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="categoryId">Catégorie</Label>
@@ -287,7 +286,7 @@ export function MarkdownTemplateEditor({ template, categories, onSave, onCancel 
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="order">Ordre d'affichage</Label>
                 <Input
@@ -299,7 +298,7 @@ export function MarkdownTemplateEditor({ template, categories, onSave, onCancel 
                   required
                 />
               </div>
-              
+
               <div className="flex items-center space-x-2 pt-8">
                 <Switch
                   id="isActive"
@@ -425,7 +424,7 @@ export function MarkdownTemplateEditor({ template, categories, onSave, onCancel 
             </CardContent>
           </Card>
         )}
-        
+
         <div className="flex justify-end space-x-2 pt-4">
           <Button type="button" variant="outline" onClick={onCancel}>
             Annuler
