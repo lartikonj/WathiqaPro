@@ -24,6 +24,8 @@ import {
   Tickets,
   Heart,
 } from 'lucide-react';
+import { templateService, categoryService } from '@/lib/adminFirestore';
+import { useQuery } from "@tanstack/react-query";
 
 export default function Forms() {
   const { t, i18n } = useTranslation();
@@ -58,7 +60,7 @@ export default function Forms() {
     return colorMap[category] || 'bg-primary/10 text-primary';
   };
 
-  const categories = [
+  const categoriesData = [
     { id: 'all', name: 'All Forms', nameAr: 'جميع النماذج' },
     { id: 'civil', name: 'Civil Registry', nameAr: 'الحالة المدنية' },
     { id: 'employment', name: 'Employment', nameAr: 'التوظيف' },
@@ -67,15 +69,25 @@ export default function Forms() {
     { id: 'identity', name: 'Identity', nameAr: 'الهوية' },
   ];
 
-  const filteredForms = formSchemas.filter(form => {
+  const { data: categories = [], isLoading: categoriesLoading } = useQuery({
+    queryKey: ['categories'],
+    queryFn: categoryService.getActiveCategories,
+  });
+
+  const { data: templates = [], isLoading: templatesLoading } = useQuery({
+    queryKey: ['templates'],
+    queryFn: templateService.getActiveTemplates,
+  });
+
+  const filteredForms = templates.filter(form => {
     const matchesSearch = searchQuery === '' || 
       form.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       form.nameAr.includes(searchQuery) ||
       form.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       form.descriptionAr.includes(searchQuery);
-    
+
     const matchesCategory = selectedCategory === 'all' || form.category === selectedCategory;
-    
+
     return matchesSearch && matchesCategory;
   });
 
@@ -122,7 +134,7 @@ export default function Forms() {
                 />
               </div>
               <div className="flex gap-2 flex-wrap">
-                {categories.map((category) => (
+                {categoriesData.map((category) => (
                   <Button
                     key={category.id}
                     variant={selectedCategory === category.id ? "default" : "outline"}
@@ -155,49 +167,49 @@ export default function Forms() {
             {filteredForms.map((form) => {
               const Icon = getFormIcon(form.icon);
               const colorClass = getFormColor(form.category);
-              
+
               return (
-                <Card key={form.id} className="hover:shadow-lg transition-shadow cursor-pointer group">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-start justify-between">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${colorClass}`}>
+                
+                  
+                    
+                      
                         <Icon className="h-5 w-5" />
-                      </div>
-                      <div className={`flex gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                        <Button variant="ghost" size="sm">
+                      
+                      
+                        
                           <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm">
+                        
+                        
                           <Bookmark className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                    <CardTitle className={`text-lg ${isRTL ? 'text-right' : ''}`}>
+                        
+                      
+                    
+                    
                       {isRTL ? form.nameAr : form.name}
-                    </CardTitle>
-                    <p className={`text-sm text-muted-foreground ${isRTL ? 'text-right' : ''}`}>
+                    
+                    
                       {isRTL ? form.descriptionAr : form.description}
-                    </p>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <div className={`flex items-center gap-2 mb-4 ${isRTL ? 'justify-end' : ''}`}>
-                      <Badge variant="secondary" className="gap-1">
+                    
+                  
+                  
+                    
+                      
                         <Clock className="h-3 w-3" />
                         {form.estimatedTime}
-                      </Badge>
-                      <Badge variant="outline" className="gap-1">
+                      
+                      
                         <Languages className="h-3 w-3" />
                         AR/FR
-                      </Badge>
-                    </div>
+                      
+                    
                     <Button 
                       className="w-full group-hover:bg-primary/90 transition-colors"
                       onClick={() => openForm(form)}
                     >
                       {t('common.view')} Form
                     </Button>
-                  </CardContent>
-                </Card>
+                  
+                
               );
             })}
           </div>

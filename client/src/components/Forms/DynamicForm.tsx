@@ -16,6 +16,7 @@ import { generatePDF } from '@/utils/pdfGenerator';
 import { savedFormsService } from '@/lib/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
+import { templateService } from '@/lib/adminFirestore';
 
 interface DynamicFormProps {
   formSchema: FormSchema;
@@ -36,13 +37,13 @@ export function DynamicForm({ formSchema, initialData = {}, onSave, onCancel }: 
   const validationSchema = z.object(
     formSchema.fields.reduce((acc, field) => {
       let validator = z.string();
-      
+
       if (field.required) {
         validator = validator.min(1, 'This field is required');
       } else {
         validator = validator.optional();
       }
-      
+
       if (field.validation) {
         if (field.validation.min) {
           validator = validator.min(field.validation.min, field.validation.message || `Minimum ${field.validation.min} characters`);
@@ -54,7 +55,7 @@ export function DynamicForm({ formSchema, initialData = {}, onSave, onCancel }: 
           validator = validator.regex(new RegExp(field.validation.pattern), field.validation.message || 'Invalid format');
         }
       }
-      
+
       acc[field.id] = validator;
       return acc;
     }, {} as Record<string, z.ZodString | z.ZodOptional<z.ZodString>>)
@@ -222,7 +223,7 @@ export function DynamicForm({ formSchema, initialData = {}, onSave, onCancel }: 
 
   const handleSaveForm = async () => {
     const formData = watch();
-    
+
     if (!user) {
       toast({
         title: t('common.error'),
@@ -235,7 +236,7 @@ export function DynamicForm({ formSchema, initialData = {}, onSave, onCancel }: 
     setIsSaving(true);
     try {
       const title = `${isRTL ? formSchema.nameAr : formSchema.name} - ${new Date().toLocaleDateString()}`;
-      
+
       await savedFormsService.saveForm(user.uid, {
         formId: formSchema.id,
         formType: formSchema.category,
@@ -294,7 +295,7 @@ export function DynamicForm({ formSchema, initialData = {}, onSave, onCancel }: 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {formSchema.fields.map(renderField)}
           </div>
-          
+
           <div className="flex flex-col sm:flex-row gap-3 justify-end pt-6 border-t">
             {onCancel && (
               <Button type="button" variant="outline" onClick={onCancel}>

@@ -25,6 +25,8 @@ import {
   CreditCard,
   Languages
 } from 'lucide-react';
+import { templateService, categoryService } from '@/lib/adminFirestore';
+import { useQuery } from '@tanstack/react-query';
 
 export default function Home() {
   const { t, i18n } = useTranslation();
@@ -43,6 +45,16 @@ export default function Home() {
     };
     return iconMap[iconString] || FileText;
   };
+
+  const { data: categories = [] } = useQuery({
+    queryKey: ['categories'],
+    queryFn: categoryService.getActiveCategories,
+  });
+
+  const { data: templates = [] } = useQuery({
+    queryKey: ['templates'], 
+    queryFn: templateService.getActiveTemplates,
+  });
 
   const features = [
     {
@@ -202,10 +214,10 @@ export default function Home() {
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {popularForms.map((form) => {
-                const Icon = getFormIcon(form.icon);
+              {templates && templates.map((template) => {
+                const Icon = getFormIcon(template.icon);
                 return (
-                  <Card key={form.id} className="hover:shadow-lg transition-shadow cursor-pointer group" onClick={() => openForm(form)}>
+                  <Card key={template.id} className="hover:shadow-lg transition-shadow cursor-pointer group">
                     <CardHeader>
                       <div className="flex items-center justify-between">
                         <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
@@ -213,20 +225,24 @@ export default function Home() {
                         </div>
                         <Badge variant="secondary" className="gap-1">
                           <Clock className="h-3 w-3" />
-                          {form.estimatedTime}
+                          {template.estimatedTime}
                         </Badge>
                       </div>
-                      <CardTitle className={isRTL ? 'text-right' : ''}>
-                        {isRTL ? form.nameAr : form.name}
-                      </CardTitle>
-                      <p className={`text-sm text-muted-foreground ${isRTL ? 'text-right' : ''}`}>
-                        {isRTL ? form.descriptionAr : form.description}
-                      </p>
+                      <CardTitle className="text-lg">{template.name}</CardTitle>
+                      <p className="text-sm text-muted-foreground">{template.nameAr}</p>
                     </CardHeader>
                     <CardContent>
-                      <Button className="w-full group-hover:bg-primary/90 transition-colors">
-                        {i18n.language === 'ar' ? 'ابدأ الآن' : 'Commencer'}
-                        <ArrowRight className={`ml-2 h-4 w-4 ${isRTL ? 'mr-2 ml-0 rotate-180' : ''}`} />
+                      <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
+                        {template.description}
+                      </p>
+                      <p className="text-sm text-slate-600 dark:text-slate-400" dir="rtl">
+                        {template.descriptionAr}
+                      </p>
+                      <Button className="w-full group-hover:bg-primary/90 transition-colors" asChild>
+                        <a to={`/forms/${template.name.toLowerCase().replace(/\s+/g, '-')}`}>
+                          {i18n.language === 'ar' ? 'ابدأ الآن' : 'Commencer'}
+                          <ArrowRight className={`ml-2 h-4 w-4 ${isRTL ? 'mr-2 ml-0 rotate-180' : ''}`} />
+                        </a>
                       </Button>
                     </CardContent>
                   </Card>
