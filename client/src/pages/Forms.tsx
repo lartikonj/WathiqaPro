@@ -169,47 +169,47 @@ export default function Forms() {
               const colorClass = getFormColor(form.category);
 
               return (
-                
-                  
-                    
-                      
+                <Card key={form.id} className="group hover:shadow-lg transition-all duration-200 overflow-hidden">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <div className={`p-2 rounded-lg ${colorClass}`}>
                         <Icon className="h-5 w-5" />
-                      
-                      
-                        
+                      </div>
+                      <div className="flex gap-2">
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                           <Eye className="h-4 w-4" />
-                        
-                        
+                        </Button>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                           <Bookmark className="h-4 w-4" />
-                        
-                      
-                    
-                    
+                        </Button>
+                      </div>
+                    </div>
+                    <CardTitle className={`text-lg leading-6 ${isRTL ? 'text-right' : ''}`}>
                       {isRTL ? form.nameAr : form.name}
-                    
-                    
+                    </CardTitle>
+                    <p className={`text-sm text-muted-foreground line-clamp-2 ${isRTL ? 'text-right' : ''}`}>
                       {isRTL ? form.descriptionAr : form.description}
-                    
-                  
-                  
-                    
-                      
+                    </p>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <div className="flex items-center justify-between text-xs text-muted-foreground mb-4">
+                      <div className="flex items-center gap-1">
                         <Clock className="h-3 w-3" />
-                        {form.estimatedTime}
-                      
-                      
+                        {form.estimatedTime || '5-10 min'}
+                      </div>
+                      <div className="flex items-center gap-1">
                         <Languages className="h-3 w-3" />
                         AR/FR
-                      
-                    
+                      </div>
+                    </div>
                     <Button 
                       className="w-full group-hover:bg-primary/90 transition-colors"
                       onClick={() => openForm(form)}
                     >
                       {t('common.view')} Form
                     </Button>
-                  
-                
+                  </CardContent>
+                </Card>
               );
             })}
           </div>
