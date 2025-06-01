@@ -8,7 +8,7 @@ export default function Register() {
   // Redirect if already authenticated
   useEffect(() => {
     if (user || isGuest) {
-      window.location.href = '/';
+      window.location.href = '/dashboard';
     }
   }, [user, isGuest]);
 

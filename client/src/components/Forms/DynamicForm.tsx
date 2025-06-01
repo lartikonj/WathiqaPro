@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/contexts/AuthContext';
 import { FormSchema, FormField as FormFieldType, FormData } from '@/types/forms';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +13,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { generatePDF } from '@/utils/pdfGenerator';
+import { savedFormsService } from '@/lib/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 
@@ -24,8 +26,10 @@ interface DynamicFormProps {
 
 export function DynamicForm({ formSchema, initialData = {}, onSave, onCancel }: DynamicFormProps) {
   const { t, i18n } = useTranslation();
+  const { user } = useAuth();
   const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const isRTL = i18n.language === 'ar';
 
   // Create dynamic validation schema
@@ -210,8 +214,49 @@ export function DynamicForm({ formSchema, initialData = {}, onSave, onCancel }: 
     }
   };
 
-  const onSubmit = (data: FormData) => {
-    onSave?.(data);
+  const onSubmit = async (data: FormData) => {
+    if (onSave) {
+      onSave(data);
+    }
+  };
+
+  const handleSaveForm = async () => {
+    const formData = watch();
+    
+    if (!user) {
+      toast({
+        title: t('common.error'),
+        description: 'Please log in to save forms',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const title = `${isRTL ? formSchema.nameAr : formSchema.name} - ${new Date().toLocaleDateString()}`;
+      
+      await savedFormsService.saveForm(user.uid, {
+        formId: formSchema.id,
+        formType: formSchema.category,
+        title,
+        formData
+      });
+
+      toast({
+        title: t('common.success'),
+        description: 'Form saved successfully!',
+      });
+    } catch (error) {
+      console.error('Error saving form:', error);
+      toast({
+        title: t('common.error'),
+        description: 'Failed to save form. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleGeneratePDF = async () => {
@@ -256,9 +301,14 @@ export function DynamicForm({ formSchema, initialData = {}, onSave, onCancel }: 
                 {t('common.cancel')}
               </Button>
             )}
-            {onSave && (
-              <Button type="submit" variant="secondary">
-                {t('forms.save')}
+            {user && (
+              <Button 
+                type="button" 
+                variant="secondary" 
+                onClick={handleSaveForm}
+                disabled={isSaving}
+              >
+                {isSaving ? t('common.loading') : t('forms.save')}
               </Button>
             )}
             <Button
