@@ -22,6 +22,7 @@ export interface Template {
   fields: FormField[];
   isActive: boolean;
   order: number;
+  markdownContent?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -44,6 +45,7 @@ export interface InsertTemplate {
   fields: FormField[];
   isActive: boolean;
   order: number;
+  markdownContent?: string;
 }
 
 export const DEFAULT_CATEGORIES: InsertCategory[] = [

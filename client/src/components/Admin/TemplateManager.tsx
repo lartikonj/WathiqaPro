@@ -11,16 +11,20 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Edit, Trash2, FileText, Settings, Copy } from 'lucide-react';
+import { Plus, Edit, Trash2, FileText, Settings, Copy, Code } from 'lucide-react';
+import { MarkdownTemplateEditor } from './MarkdownTemplateEditor';
 
 export function TemplateManager() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<Template | null>(null);
+  const [isMarkdownEditorOpen, setIsMarkdownEditorOpen] = useState(false);
+  const [editingMarkdownTemplate, setEditingMarkdownTemplate] = useState<Template | null>(null);
   const [formData, setFormData] = useState<InsertTemplate>({
     name: '',
     nameAr: '',
@@ -151,6 +155,21 @@ export function TemplateManager() {
     setIsDialogOpen(true);
   };
 
+  const handleNewMarkdownTemplate = () => {
+    setEditingMarkdownTemplate(null);
+    setIsMarkdownEditorOpen(true);
+  };
+
+  const handleEditMarkdownTemplate = (template: Template) => {
+    setEditingMarkdownTemplate(template);
+    setIsMarkdownEditorOpen(true);
+  };
+
+  const handleMarkdownEditorClose = () => {
+    setIsMarkdownEditorOpen(false);
+    setEditingMarkdownTemplate(null);
+  };
+
   const addField = () => {
     const newField: FormField = {
       id: `field_${Date.now()}`,
@@ -191,6 +210,17 @@ export function TemplateManager() {
     );
   }
 
+  if (isMarkdownEditorOpen) {
+    return (
+      <MarkdownTemplateEditor
+        template={editingMarkdownTemplate || undefined}
+        categories={categories}
+        onSave={handleMarkdownEditorClose}
+        onCancel={handleMarkdownEditorClose}
+      />
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -202,8 +232,17 @@ export function TemplateManager() {
             Créez et gérez les formulaires de documents
           </p>
         </div>
+      </div>
+
+      <Tabs defaultValue="form" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="form">Templates Formulaire</TabsTrigger>
+          <TabsTrigger value="markdown">Templates Markdown</TabsTrigger>
+        </TabsList>
         
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <TabsContent value="form" className="space-y-6">
+          <div className="flex justify-end">
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={handleNewTemplate}>
               <Plus className="h-4 w-4 mr-2" />
@@ -470,6 +509,88 @@ export function TemplateManager() {
           </Card>
         ))}
       </div>
+    </TabsContent>
+
+    <TabsContent value="markdown" className="space-y-6">
+      <div className="flex justify-end">
+        <Button onClick={handleNewMarkdownTemplate}>
+          <Code className="h-4 w-4 mr-2" />
+          Nouveau Template Markdown
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {templates
+          .filter(template => template.markdownContent)
+          .map((template) => (
+          <Card key={template.id} className="hover:shadow-lg transition-shadow">
+            <CardHeader className="pb-3">
+              <div className="flex items-start justify-between">
+                <div className="flex items-center space-x-2">
+                  <Code className="h-5 w-5 text-primary" />
+                  <div>
+                    <CardTitle className="text-lg">{template.name}</CardTitle>
+                    <p className="text-sm text-muted-foreground" dir="rtl">
+                      {template.nameAr}
+                    </p>
+                  </div>
+                </div>
+                <Badge variant={template.isActive ? 'default' : 'secondary'}>
+                  {template.isActive ? 'Actif' : 'Inactif'}
+                </Badge>
+              </div>
+            </CardHeader>
+            
+            <CardContent className="space-y-4">
+              <div>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  {template.description}
+                </p>
+                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1" dir="rtl">
+                  {template.descriptionAr}
+                </p>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Catégorie:</span>
+                  <span>{getCategoryName(template.categoryId)}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Champs:</span>
+                  <span>{template.fields.length}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Type:</span>
+                  <span className="text-blue-600 font-medium">Markdown</span>
+                </div>
+              </div>
+              
+              <div className="flex space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleEditMarkdownTemplate(template)}
+                  className="flex-1"
+                >
+                  <Edit className="h-4 w-4 mr-2" />
+                  Modifier
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleDelete(template.id)}
+                  disabled={deleteMutation.isPending}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </TabsContent>
+  </Tabs>
     </div>
   );
 }
