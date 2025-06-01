@@ -214,6 +214,7 @@ export function TemplateManager() {
     return (
       <MarkdownTemplateEditor
         template={editingMarkdownTemplate || undefined}
+        categories={categories}
         onSave={handleMarkdownEditorClose}
         onCancel={handleMarkdownEditorClose}
       />
