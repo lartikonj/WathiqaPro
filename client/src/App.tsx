@@ -11,6 +11,7 @@ import Dashboard from "@/pages/Dashboard";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import Forms from "@/pages/Forms";
+import Admin from "@/pages/Admin";
 import NotFound from "@/pages/not-found";
 import "./lib/i18n";
 
@@ -30,6 +31,7 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
       <Route path="/forms" component={Forms} />
+      <Route path="/admin" component={Admin} />
       <Route component={NotFound} />
     </Switch>
   );
